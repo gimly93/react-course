@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { Component } from "react";
+import "./App.css";
+import CardList from "./components/card-list/card-list.component";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      monsters: [],
+      search: "",
+    };
+    console.log("constructor");
+  }
+
+  componentDidMount() {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((users) =>
+        this.setState(
+          () => {
+            return { monsters: users };
+          },
+          () => console.log(this.state)
+        )
+      );
+    console.log("componentDidMount");
+  }
+
+  searchMonster = (event) => {
+    this.setState({ search: event.target.value });
+  };
+  render() {
+    const filterdMonsters = this.state.monsters.filter(({ name }) =>
+      name.toLocaleLowerCase().includes(this.state.search)
+    );
+
+    console.log("render");
+    return (
+      <div className="App">
+        <input
+          className="search-box"
+          onChange={this.searchMonster}
+          type="search"
+          placeholder="search monsters"
+        />
+        <CardList monsters={filterdMonsters} />
+      </div>
+    );
+  }
 }
 
 export default App;
